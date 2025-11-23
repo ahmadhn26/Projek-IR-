@@ -17,6 +17,7 @@
             <ul class="navbar-menu">
                 <li><a href="/">Home</a></li>
                 <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/eda">EDA</a></li>
                 <li><a href="/analyzer" class="active">Analyzer</a></li>
                 <li><a href="/comparison">Comparison</a></li>
                 <li><a href="/methodology">Methodology</a></li>
@@ -54,7 +55,8 @@
                             <label class="form-label" for="modelSelect">Pilih Model:</label>
                             <select class="form-control" id="modelSelect">
                                 {% for model in models %}
-                                <option value="{{ model }}" {% if model=='SVM' %}selected{% endif %}>{{ model }}
+                                <option value="{{ model }}" {% if model=='Random Forest' %}selected{% endif %}>{{ model
+                                    }}
                                 </option>
                                 {% endfor %}
                             </select>

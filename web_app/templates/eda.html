@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EDA - Sentiment Analysis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-brand">📊 Sentiment Analysis</div>
+            <ul class="navbar-menu">
+                <li><a href="/">Home</a></li>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/eda" class="active">EDA</a></li>
+                <li><a href="/analyzer">Analyzer</a></li>
+                <li><a href="/comparison">Comparison</a></li>
+                <li><a href="/methodology">Methodology</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- EDA Section -->
+    <section class="section">
+        <div class="container">
+            <h1 class="text-center mb-3">📊 Exploratory Data Analysis</h1>
+            <p class="text-center" style="color: var(--gray); margin-bottom: 3rem;">
+                Analisis mendalam terhadap dataset dengan visualisasi word clouds, bigrams, dan distribusi data
+            </p>
+
+            {% if images_exist %}
+
+            <!-- Sentiment Distribution -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h3 class="card-title">Distribusi Sentimen</h3>
+                </div>
+                <div style="text-align: center; padding: 2rem;">
+                    <img src="{{ url_for('static', filename='images/eda/sentiment_distribution.png') }}"
+                        alt="Sentiment Distribution"
+                        style="max-width: 100%; height: auto; border-radius: var(--radius-md);">
+                </div>
+                <p style="padding: 0 2rem 2rem; color: var(--gray);">
+                    Grafik di atas menunjukkan distribusi sentimen dalam dataset. Terlihat bahwa sentimen negatif lebih
+                    dominan, yang mencerminkan respons masyarakat terhadap rencana kenaikan tarif Transjakarta.
+                </p>
+            </div>
+
+            <!-- Word Clouds -->
+            <h2 class="text-center mt-3 mb-2">☁️ Word Clouds</h2>
+            <p class="text-center mb-3" style="color: var(--gray);">
+                Visualisasi kata-kata yang paling sering muncul untuk setiap sentimen
+            </p>
+
+            <div class="grid grid-2 mb-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title" style="color: var(--negative);">😞 Sentimen Negatif</h3>
+                    </div>
+                    <div style="padding: 1rem;">
+                        <img src="{{ url_for('static', filename='images/eda/wordcloud_negative.png') }}"
+                            alt="Word Cloud Negative"
+                            style="width: 100%; height: auto; border-radius: var(--radius-md);">
+                    </div>
+                    <p style="padding: 0 1rem 1rem; color: var(--gray); font-size: 0.875rem;">
+                        Kata-kata seperti "mahal", "naik", "tidak", dan "kuat" mendominasi sentimen negatif,
+                        menunjukkan kekhawatiran masyarakat tentang kenaikan tarif.
+                    </p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title" style="color: var(--positive);">😊 Sentimen Positif</h3>
+                    </div>
+                    <div style="padding: 1rem;">
+                        <img src="{{ url_for('static', filename='images/eda/wordcloud_positive.png') }}"
+                            alt="Word Cloud Positive"
+                            style="width: 100%; height: auto; border-radius: var(--radius-md);">
+                    </div>
+                    <p style="padding: 0 1rem 1rem; color: var(--gray); font-size: 0.875rem;">
+                        Sentimen positif didominasi kata-kata seperti "bagus", "baik", "nyaman", dan "pelayanan",
+                        menunjukkan apresiasi terhadap kualitas layanan Transjakarta.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Text Length Distribution -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h3 class="card-title">📏 Distribusi Panjang Teks</h3>
+                </div>
+                <div style="text-align: center; padding: 2rem;">
+                    <img src="{{ url_for('static', filename='images/eda/text_length_distribution.png') }}"
+                        alt="Text Length Distribution"
+                        style="max-width: 100%; height: auto; border-radius: var(--radius-md);">
+                </div>
+                <p style="padding: 0 2rem 2rem; color: var(--gray);">
+                    Boxplot di atas menunjukkan distribusi panjang teks (jumlah kata) untuk setiap sentimen. Ini
+                    membantu memahami karakteristik panjang komentar berdasarkan sentimen.
+                </p>
+            </div>
+
+            <!-- Bigram Analysis -->
+            <h2 class="text-center mt-3 mb-2">🔤 Analisis Bigram</h2>
+            <p class="text-center mb-3" style="color: var(--gray);">
+                Frase (kombinasi 2 kata) yang paling sering muncul untuk setiap sentimen
+            </p>
+
+            <div class="grid grid-2 mb-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title" style="color: var(--negative);">Top 15 Bigram - Negatif</h3>
+                    </div>
+                    <div style="padding: 1rem;">
+                        <img src="{{ url_for('static', filename='images/eda/bigrams_negative.png') }}"
+                            alt="Bigrams Negative" style="width: 100%; height: auto; border-radius: var(--radius-md);">
+                    </div>
+                    <p style="padding: 0 1rem 1rem; color: var(--gray); font-size: 0.875rem;">
+                        Bigram seperti "naik mahal", "tidak kuat", dan "bayar mahal" menunjukkan pola keluhan utama
+                        masyarakat.
+                    </p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title" style="color: var(--positive);">Top 15 Bigram - Positif</h3>
+                    </div>
+                    <div style="padding: 1rem;">
+                        <img src="{{ url_for('static', filename='images/eda/bigrams_positive.png') }}"
+                            alt="Bigrams Positive" style="width: 100%; height: auto; border-radius: var(--radius-md);">
+                    </div>
+                    <p style="padding: 0 1rem 1rem; color: var(--gray); font-size: 0.875rem;">
+                        Bigram positif mencerminkan apresiasi terhadap pelayanan dan kenyamanan Transjakarta.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Insights -->
+            <div class="card" style="background: var(--gradient-transjakarta); color: white;">
+                <h3 style="color: white; margin-bottom: 1rem;">💡 Key Insights</h3>
+                <ul style="line-height: 2;">
+                    <li><strong>Dominasi Sentimen Negatif:</strong> Mayoritas komentar menunjukkan kekhawatiran
+                        terhadap kenaikan tarif</li>
+                    <li><strong>Fokus pada Harga:</strong> Kata-kata terkait "mahal", "naik", dan "bayar" sangat
+                        dominan di sentimen negatif</li>
+                    <li><strong>Apresiasi Pelayanan:</strong> Meskipun ada kekhawatiran harga, kualitas pelayanan tetap
+                        diapresiasi</li>
+                    <li><strong>Pola Bahasa:</strong> Penggunaan bahasa informal dan slang media sosial sangat tinggi
+                    </li>
+                </ul>
+            </div>
+
+            {% else %}
+
+            <!-- No Images Available -->
+            <div class="card">
+                <div style="text-align: center; padding: 3rem;">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">📊</div>
+                    <h3>Visualisasi Belum Tersedia</h3>
+                    <p style="color: var(--gray); margin: 1rem 0;">
+                        Jalankan script berikut untuk generate visualisasi EDA:
+                    </p>
+                    <div
+                        style="background: var(--light-gray); padding: 1rem; border-radius: var(--radius-md); font-family: monospace; margin: 1rem 0;">
+                        python generate_eda_images.py
+                    </div>
+                    <p style="color: var(--gray); font-size: 0.875rem;">
+                        Setelah selesai, refresh halaman ini untuk melihat visualisasi.
+                    </p>
+                </div>
+            </div>
+
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Sentiment Analysis - Tugas Akhir Information Retrieval</p>
+        </div>
+    </footer>
+</body>
+
+</html>

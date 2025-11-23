@@ -52,6 +52,18 @@ def dashboard():
                          models_info=models_info)
 
 
+@app.route('/eda')
+def eda():
+    """Exploratory Data Analysis page"""
+    import os
+    
+    # Check if EDA images exist
+    eda_images_dir = 'static/images/eda'
+    images_exist = os.path.exists(eda_images_dir) and len(os.listdir(eda_images_dir)) > 0
+    
+    return render_template('eda.html', images_exist=images_exist)
+
+
 @app.route('/analyzer')
 def analyzer():
     """Real-time sentiment analyzer"""
