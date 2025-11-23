@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Comparison - Sentiment Analysis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-brand">📊 Sentiment Analysis</div>
+            <ul class="navbar-menu">
+                <li><a href="/">Home</a></li>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/analyzer">Analyzer</a></li>
+                <li><a href="/comparison" class="active">Comparison</a></li>
+                <li><a href="/methodology">Methodology</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Comparison Section -->
+    <section class="section">
+        <div class="container">
+            <h1 class="text-center mb-3">⚖️ Perbandingan Model</h1>
+            <p class="text-center" style="color: var(--gray); margin-bottom: 3rem;">
+                Perbandingan performa Naive Bayes, SVM, dan Random Forest
+            </p>
+
+            {% if models_info %}
+            <!-- Comparison Table -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h3 class="card-title">Tabel Perbandingan Metrik</h3>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Model</th>
+                                <th>Accuracy</th>
+                                <th>F1 Macro</th>
+                                <th>F1 Weighted</th>
+                                <th>ROC-AUC</th>
+                                <th>CV F1 Mean</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for model in models_info %}
+                            <tr>
+                                <td><strong>{{ model.Model }}</strong></td>
+                                <td>{{ "%.2f"|format(model.Test_Accuracy * 100) }}%</td>
+                                <td>{{ "%.4f"|format(model.Test_F1_Macro) }}</td>
+                                <td>{{ "%.4f"|format(model.Test_F1_Weighted) }}</td>
+                                <td>{{ "%.4f"|format(model.Test_ROC_AUC) if model.Test_ROC_AUC else 'N/A' }}</td>
+                                <td>{{ "%.4f"|format(model.CV_F1_Mean) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Best Model Highlight -->
+            {% set best_model = models_info|sort(attribute='Test_F1_Macro', reverse=True)|first %}
+            <div class="card mb-3" style="background: var(--gradient-transjakarta); color: white;">
+                <div style="text-align: center; padding: 2rem;">
+                    <h2 style="color: white; margin-bottom: 1rem;">🏆 Model Terbaik</h2>
+                    <div style="font-size: 3rem; font-weight: 700; margin-bottom: 1rem;">
+                        {{ best_model.Model }}
+                    </div>
+                    <div style="font-size: 1.25rem; opacity: 0.95;">
+                        F1 Macro Score: <strong>{{ "%.4f"|format(best_model.Test_F1_Macro) }}</strong>
+                    </div>
+                    <div style="margin-top: 1.5rem; font-size: 0.95rem; opacity: 0.9;">
+                        Accuracy: {{ "%.2f"|format(best_model.Test_Accuracy * 100) }}% |
+                        ROC-AUC: {{ "%.4f"|format(best_model.Test_ROC_AUC) if best_model.Test_ROC_AUC else 'N/A' }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Model Details -->
+            <div class="grid grid-3">
+                {% for model in models_info %}
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">{{ model.Model }}</h3>
+                    </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <div style="font-size: 0.875rem; color: var(--gray); margin-bottom: 0.25rem;">Best Parameters:
+                        </div>
+                        <div
+                            style="font-family: monospace; font-size: 0.75rem; background: var(--light-gray); padding: 0.5rem; border-radius: 0.25rem; overflow-x: auto;">
+                            {{ model.Best_Params }}
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.875rem;">
+                        <div>
+                            <div style="color: var(--gray);">Accuracy</div>
+                            <div style="font-weight: 700;">{{ "%.2f"|format(model.Test_Accuracy * 100) }}%</div>
+                        </div>
+                        <div>
+                            <div style="color: var(--gray);">F1 Macro</div>
+                            <div style="font-weight: 700;">{{ "%.4f"|format(model.Test_F1_Macro) }}</div>
+                        </div>
+                        <div>
+                            <div style="color: var(--gray);">F1 Weighted</div>
+                            <div style="font-weight: 700;">{{ "%.4f"|format(model.Test_F1_Weighted) }}</div>
+                        </div>
+                        <div>
+                            <div style="color: var(--gray);">ROC-AUC</div>
+                            <div style="font-weight: 700;">{{ "%.4f"|format(model.Test_ROC_AUC) if model.Test_ROC_AUC
+                                else 'N/A' }}</div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% else %}
+            <div class="card">
+                <div style="text-align: center; padding: 3rem;">
+                    <h3>⚠️ Data Tidak Tersedia</h3>
+                    <p>Model belum di-training. Jalankan <code>python train_and_save_models.py</code> terlebih dahulu.
+                    </p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Sentiment Analysis - Tugas Akhir Information Retrieval</p>
+        </div>
+    </footer>
+</body>
+
+</html>

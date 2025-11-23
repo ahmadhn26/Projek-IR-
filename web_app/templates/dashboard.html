@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Sentiment Analysis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-brand">📊 Sentiment Analysis</div>
+            <ul class="navbar-menu">
+                <li><a href="/">Home</a></li>
+                <li><a href="/dashboard" class="active">Dashboard</a></li>
+                <li><a href="/analyzer">Analyzer</a></li>
+                <li><a href="/comparison">Comparison</a></li>
+                <li><a href="/methodology">Methodology</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Dashboard Section -->
+    <section class="section">
+        <div class="container">
+            <h1 class="text-center mb-3">📈 Dashboard Visualisasi</h1>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-3 mb-3">
+                <div class="card">
+                    <h4>Total Data</h4>
+                    <div style="font-size: 2.5rem; font-weight: 700; color: var(--primary);">
+                        {{ stats.total_samples if stats else 'N/A' }}
+                    </div>
+                    <p style="color: var(--gray); margin: 0;">Komentar dianalisis</p>
+                </div>
+                <div class="card">
+                    <h4>Sentimen Negatif</h4>
+                    <div style="font-size: 2.5rem; font-weight: 700; color: var(--negative);">
+                        {{ stats.negative_samples if stats else 'N/A' }}
+                    </div>
+                    <p style="color: var(--gray); margin: 0;">{{ "%.1f"|format((stats.negative_samples /
+                        stats.total_samples * 100) if stats and stats.total_samples > 0 else 0) }}% dari total</p>
+                </div>
+                <div class="card">
+                    <h4>Sentimen Positif</h4>
+                    <div style="font-size: 2.5rem; font-weight: 700; color: var(--positive);">
+                        {{ stats.positive_samples if stats else 'N/A' }}
+                    </div>
+                    <p style="color: var(--gray); margin: 0;">{{ "%.1f"|format((stats.positive_samples /
+                        stats.total_samples * 100) if stats and stats.total_samples > 0 else 0) }}% dari total</p>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="grid grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Distribusi Sentimen</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="sentimentChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Perbandingan Akurasi Model</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="accuracyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h3 class="card-title">Perbandingan F1 Score</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas id="f1Chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Sentiment Analysis - Tugas Akhir Information Retrieval</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Data from backend
+        const stats = {{ stats| tojson if stats else '{}' }};
+        const modelsInfo = {{ models_info| tojson if models_info else '[]' }};
+
+        // Sentiment Distribution Pie Chart
+        if (stats.negative_samples && stats.positive_samples) {
+            const sentimentCtx = document.getElementById('sentimentChart').getContext('2d');
+            new Chart(sentimentCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Negatif', 'Positif'],
+                    datasets: [{
+                        data: [stats.negative_samples, stats.positive_samples],
+                        backgroundColor: ['#EF4444', '#10B981'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Model Accuracy Comparison
+        if (modelsInfo.length > 0) {
+            const accuracyCtx = document.getElementById('accuracyChart').getContext('2d');
+            new Chart(accuracyCtx, {
+                type: 'bar',
+                data: {
+                    labels: modelsInfo.map(m => m.Model),
+                    datasets: [{
+                        label: 'Accuracy',
+                        data: modelsInfo.map(m => (m.Test_Accuracy * 100).toFixed(2)),
+                        backgroundColor: ['#667eea', '#764ba2', '#f093fb'],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function (value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // F1 Score Comparison
+            const f1Ctx = document.getElementById('f1Chart').getContext('2d');
+            new Chart(f1Ctx, {
+                type: 'bar',
+                data: {
+                    labels: modelsInfo.map(m => m.Model),
+                    datasets: [
+                        {
+                            label: 'F1 Macro',
+                            data: modelsInfo.map(m => m.Test_F1_Macro.toFixed(4)),
+                            backgroundColor: '#4facfe'
+                        },
+                        {
+                            label: 'F1 Weighted',
+                            data: modelsInfo.map(m => m.Test_F1_Weighted.toFixed(4)),
+                            backgroundColor: '#00f2fe'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 1
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

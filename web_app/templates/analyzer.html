@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentiment Analyzer - Transjakarta</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-brand">📊 Sentiment Analysis</div>
+            <ul class="navbar-menu">
+                <li><a href="/">Home</a></li>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/analyzer" class="active">Analyzer</a></li>
+                <li><a href="/comparison">Comparison</a></li>
+                <li><a href="/methodology">Methodology</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Analyzer Section -->
+    <section class="section">
+        <div class="container">
+            <h1 class="text-center mb-3">🤖 Real-time Sentiment Analyzer</h1>
+            <p class="text-center" style="color: var(--gray); margin-bottom: 3rem;">
+                Masukkan komentar tentang Transjakarta dan dapatkan prediksi sentimen secara real-time
+            </p>
+
+            <div class="grid grid-2">
+                <!-- Input Form -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Input Komentar</h3>
+                    </div>
+
+                    <form id="analyzerForm">
+                        <div class="form-group">
+                            <label class="form-label" for="textInput">Komentar:</label>
+                            <textarea class="form-control" id="textInput"
+                                placeholder="Contoh: Transjakarta naik lagi mahal banget ga kuat bayarnya..."
+                                required></textarea>
+                            <small style="color: var(--gray);">
+                                Tip: Gunakan bahasa sehari-hari seperti di media sosial
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="modelSelect">Pilih Model:</label>
+                            <select class="form-control" id="modelSelect">
+                                {% for model in models %}
+                                <option value="{{ model }}" {% if model=='SVM' %}selected{% endif %}>{{ model }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;" id="predictBtn">
+                            Analisis Sentimen
+                        </button>
+                    </form>
+
+                    <!-- Quick Examples -->
+                    <div class="mt-2">
+                        <h4 style="font-size: 1rem; margin-bottom: 0.5rem;">Contoh Cepat:</h4>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            <button class="btn btn-secondary"
+                                onclick="setExample('Transjakarta naik lagi mahal banget ga kuat bayarnya')"
+                                style="text-align: left; font-size: 0.875rem;">
+                                "Transjakarta naik lagi mahal banget..."
+                            </button>
+                            <button class="btn btn-secondary"
+                                onclick="setExample('Bagus nih Transjakarta pelayanannya makin baik')"
+                                style="text-align: left; font-size: 0.875rem;">
+                                "Bagus nih Transjakarta pelayanannya..."
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result Display -->
+                <div>
+                    <div class="card" id="resultCard" style="display: none;">
+                        <div class="card-header">
+                            <h3 class="card-title">Hasil Prediksi</h3>
+                        </div>
+
+                        <div id="resultContent">
+                            <!-- Will be filled by JavaScript -->
+                        </div>
+                    </div>
+
+                    <div class="card" id="placeholderCard">
+                        <div style="text-align: center; padding: 3rem 1rem; color: var(--gray);">
+                            <div style="font-size: 4rem; margin-bottom: 1rem;">🔮</div>
+                            <h3>Hasil akan muncul di sini</h3>
+                            <p>Masukkan komentar dan klik "Analisis Sentimen"</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Sentiment Analysis - Tugas Akhir Information Retrieval</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Set example text
+        function setExample(text) {
+            document.getElementById('textInput').value = text;
+        }
+
+        // Form submission
+        document.getElementById('analyzerForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const text = document.getElementById('textInput').value.trim();
+            const model = document.getElementById('modelSelect').value;
+            const btn = document.getElementById('predictBtn');
+
+            if (!text) {
+                alert('Mohon masukkan komentar terlebih dahulu');
+                return;
+            }
+
+            // Show loading state
+            btn.disabled = true;
+            btn.innerHTML = 'Menganalisis... <span class="loading"></span>';
+
+            // Hide placeholder, show result card
+            document.getElementById('placeholderCard').style.display = 'none';
+            document.getElementById('resultCard').style.display = 'block';
+            document.getElementById('resultContent').innerHTML = '<div style="text-align: center; padding: 2rem;"><span class="loading" style="width: 40px; height: 40px; border-width: 4px;"></span></div>';
+
+            try {
+                // Call API
+                const response = await fetch('/api/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ text, model })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    displayResult(data);
+                } else {
+                    throw new Error(data.error || 'Prediction failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('resultContent').innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--negative);">
+                        <h3>❌ Error</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            } finally {
+                // Reset button
+                btn.disabled = false;
+                btn.innerHTML = 'Analisis Sentimen';
+            }
+        });
+
+        function displayResult(data) {
+            const isPositive = data.sentiment === 'Positif';
+            const confidence = (data.confidence * 100).toFixed(1);
+
+            let html = `
+                <div class="result-container ${isPositive ? 'result-positive' : 'result-negative'}">
+                    <div style="text-align: center;">
+                        <div class="sentiment-badge ${isPositive ? 'badge-positive' : 'badge-negative'}">
+                            ${isPositive ? '😊' : '😞'} ${data.sentiment}
+                        </div>
+                        
+                        <div style="margin-top: 1rem;">
+                            <div style="font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">
+                                Confidence: ${confidence}%
+                            </div>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" style="width: ${confidence}%;">
+                                    ${confidence}%
+                                </div>
+                            </div>
+                        </div>
+            `;
+
+            // Probabilities
+            if (data.probabilities) {
+                html += `
+                    <div style="margin-top: 1.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
+                        <div>
+                            <div style="font-weight: 700; font-size: 1.25rem;">${(data.probabilities.Negatif * 100).toFixed(1)}%</div>
+                            <div style="font-size: 0.875rem;">Negatif</div>
+                        </div>
+                        <div>
+                            <div style="font-weight: 700; font-size: 1.25rem;">${(data.probabilities.Positif * 100).toFixed(1)}%</div>
+                            <div style="font-size: 0.875rem;">Positif</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            html += `</div></div>`;
+
+            // Preprocessing steps
+            if (data.preprocessing_steps) {
+                html += `
+                    <div class="preprocessing-steps">
+                        <h4 style="margin-bottom: 1rem;">📝 Tahapan Preprocessing:</h4>
+                `;
+
+                data.preprocessing_steps.forEach(step => {
+                    html += `
+                        <div class="step-item">
+                            <span class="step-label">${step[0]}:</span>
+                            <div style="font-family: monospace; background: rgba(255,255,255,0.7); padding: 0.5rem; border-radius: 0.25rem; margin-top: 0.25rem;">
+                                ${step[1] || '<em>(kosong)</em>'}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += `</div>`;
+            }
+
+            document.getElementById('resultContent').innerHTML = html;
+        }
+    </script>
+</body>
+
+</html>

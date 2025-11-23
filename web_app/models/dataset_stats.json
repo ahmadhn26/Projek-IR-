@@ -1,0 +1,7 @@
+{
+  "total_samples": 2817,
+  "negative_samples": 2268,
+  "positive_samples": 549,
+  "test_samples": 564,
+  "train_samples": 3628
+}

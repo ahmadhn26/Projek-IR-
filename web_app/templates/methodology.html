@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Methodology - Sentiment Analysis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-brand">📊 Sentiment Analysis</div>
+            <ul class="navbar-menu">
+                <li><a href="/">Home</a></li>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/analyzer">Analyzer</a></li>
+                <li><a href="/comparison">Comparison</a></li>
+                <li><a href="/methodology" class="active">Methodology</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Methodology Section -->
+    <section class="section">
+        <div class="container">
+            <h1 class="text-center mb-3">📚 Metodologi Penelitian</h1>
+
+            <!-- Overview -->
+            <div class="card mb-3">
+                <h2>Overview</h2>
+                <p>Penelitian ini menganalisis sentimen masyarakat terhadap rencana kenaikan tarif Transjakarta
+                    menggunakan data dari platform media sosial TikTok dan YouTube. Analisis dilakukan menggunakan tiga
+                    algoritma machine learning: <strong>Naive Bayes</strong>, <strong>SVM (Support Vector
+                        Machine)</strong>, dan <strong>Random Forest</strong>.</p>
+            </div>
+
+            <!-- Pipeline -->
+            <div class="card mb-3">
+                <h2>Pipeline Penelitian</h2>
+                <div
+                    style="background: var(--light-gray); padding: 2rem; border-radius: var(--radius-md); margin-top: 1rem;">
+                    <div
+                        style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+                        <div style="text-align: center; flex: 1; min-width: 150px;">
+                            <div
+                                style="background: var(--primary); color: white; padding: 1rem; border-radius: var(--radius-md); font-weight: 700;">
+                                1. Data Collection
+                            </div>
+                            <div style="font-size: 0.875rem; margin-top: 0.5rem; color: var(--gray);">TikTok & YouTube
+                            </div>
+                        </div>
+                        <div style="font-size: 1.5rem; color: var(--gray);">→</div>
+                        <div style="text-align: center; flex: 1; min-width: 150px;">
+                            <div
+                                style="background: var(--secondary); color: white; padding: 1rem; border-radius: var(--radius-md); font-weight: 700;">
+                                2. Preprocessing
+                            </div>
+                            <div style="font-size: 0.875rem; margin-top: 0.5rem; color: var(--gray);">Cleaning &
+                                Normalisasi</div>
+                        </div>
+                        <div style="font-size: 1.5rem; color: var(--gray);">→</div>
+                        <div style="text-align: center; flex: 1; min-width: 150px;">
+                            <div
+                                style="background: var(--accent); color: white; padding: 1rem; border-radius: var(--radius-md); font-weight: 700;">
+                                3. Feature Extraction
+                            </div>
+                            <div style="font-size: 0.875rem; margin-top: 0.5rem; color: var(--gray);">TF-IDF</div>
+                        </div>
+                        <div style="font-size: 1.5rem; color: var(--gray);">→</div>
+                        <div style="text-align: center; flex: 1; min-width: 150px;">
+                            <div
+                                style="background: var(--positive); color: white; padding: 1rem; border-radius: var(--radius-md); font-weight: 700;">
+                                4. Modeling
+                            </div>
+                            <div style="font-size: 0.875rem; margin-top: 0.5rem; color: var(--gray);">3 Algoritma ML
+                            </div>
+                        </div>
+                        <div style="font-size: 1.5rem; color: var(--gray);">→</div>
+                        <div style="text-align: center; flex: 1; min-width: 150px;">
+                            <div
+                                style="background: var(--negative); color: white; padding: 1rem; border-radius: var(--radius-md); font-weight: 700;">
+                                5. Evaluation
+                            </div>
+                            <div style="font-size: 0.875rem; margin-top: 0.5rem; color: var(--gray);">Metrics &
+                                Comparison</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Details -->
+            <div class="grid grid-2">
+                <!-- Preprocessing -->
+                <div class="card">
+                    <h3>1. Preprocessing</h3>
+                    <ul style="line-height: 2;">
+                        <li><strong>Text Cleaning:</strong> Hapus emoji, URL, mention, angka</li>
+                        <li><strong>Case Folding:</strong> Konversi ke lowercase</li>
+                        <li><strong>Normalisasi Slang:</strong> Kamus alay khusus Transjakarta</li>
+                        <li><strong>Stopword Removal:</strong> Dengan mempertahankan kata negasi</li>
+                        <li><strong>Stemming:</strong> Menggunakan Sastrawi</li>
+                    </ul>
+                </div>
+
+                <!-- Feature Extraction -->
+                <div class="card">
+                    <h3>2. Feature Extraction</h3>
+                    <ul style="line-height: 2;">
+                        <li><strong>Metode:</strong> TF-IDF Vectorizer</li>
+                        <li><strong>N-gram:</strong> (1, 2) - unigram & bigram</li>
+                        <li><strong>Max Features:</strong> 3000</li>
+                        <li><strong>Min DF:</strong> 2 (kata muncul minimal 2x)</li>
+                        <li><strong>Max DF:</strong> 0.8 (maksimal di 80% dokumen)</li>
+                    </ul>
+                </div>
+
+                <!-- Data Balancing -->
+                <div class="card">
+                    <h3>3. Data Balancing</h3>
+                    <ul style="line-height: 2;">
+                        <li><strong>Metode:</strong> SMOTE (Synthetic Minority Over-sampling)</li>
+                        <li><strong>Aplikasi:</strong> Hanya pada training set</li>
+                        <li><strong>Train-Test Split:</strong> 80:20 dengan stratified sampling</li>
+                        <li><strong>Tujuan:</strong> Mengatasi imbalanced data</li>
+                    </ul>
+                </div>
+
+                <!-- Hyperparameter Tuning -->
+                <div class="card">
+                    <h3>4. Hyperparameter Tuning</h3>
+                    <ul style="line-height: 2;">
+                        <li><strong>Metode:</strong> GridSearchCV</li>
+                        <li><strong>Cross-Validation:</strong> 5-fold CV</li>
+                        <li><strong>Scoring:</strong> F1 Macro Score</li>
+                        <li><strong>Optimisasi:</strong> Parameter terbaik untuk setiap model</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Models -->
+            <div class="card mt-3">
+                <h2>Model Machine Learning</h2>
+                <div class="grid grid-3 mt-2">
+                    <div style="padding: 1.5rem; background: var(--light-gray); border-radius: var(--radius-md);">
+                        <h4>Naive Bayes</h4>
+                        <p style="font-size: 0.875rem; color: var(--gray);">
+                            Model probabilistik berbasis Teorema Bayes. Efisien untuk text classification.
+                        </p>
+                        <div style="font-size: 0.75rem; margin-top: 1rem;">
+                            <strong>Tuned Parameters:</strong><br>
+                            alpha: [0.1, 0.5, 1.0, 2.0, 5.0]
+                        </div>
+                    </div>
+                    <div style="padding: 1.5rem; background: var(--light-gray); border-radius: var(--radius-md);">
+                        <h4>SVM</h4>
+                        <p style="font-size: 0.875rem; color: var(--gray);">
+                            Support Vector Machine dengan kernel linear dan RBF. Optimal untuk high-dimensional data.
+                        </p>
+                        <div style="font-size: 0.75rem; margin-top: 1rem;">
+                            <strong>Tuned Parameters:</strong><br>
+                            C: [0.1, 1, 10, 100]<br>
+                            kernel: ['linear', 'rbf']
+                        </div>
+                    </div>
+                    <div style="padding: 1.5rem; background: var(--light-gray); border-radius: var(--radius-md);">
+                        <h4>Random Forest</h4>
+                        <p style="font-size: 0.875rem; color: var(--gray);">
+                            Ensemble learning dengan multiple decision trees. Robust terhadap overfitting.
+                        </p>
+                        <div style="font-size: 0.75rem; margin-top: 1rem;">
+                            <strong>Tuned Parameters:</strong><br>
+                            n_estimators: [50, 100, 200]<br>
+                            max_depth: [10, 20, None]
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Evaluation -->
+            <div class="card mt-3">
+                <h2>Metrik Evaluasi</h2>
+                <div class="grid grid-2 mt-2">
+                    <div>
+                        <h4>Primary Metrics</h4>
+                        <ul style="line-height: 2;">
+                            <li><strong>F1 Macro Score:</strong> Metrik utama untuk binary classification</li>
+                            <li><strong>Accuracy:</strong> Persentase prediksi yang benar</li>
+                            <li><strong>ROC-AUC:</strong> Kemampuan model membedakan kelas</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4>Additional Metrics</h4>
+                        <ul style="line-height: 2;">
+                            <li><strong>Precision:</strong> Akurasi prediksi positif</li>
+                            <li><strong>Recall:</strong> Kemampuan mendeteksi kelas positif</li>
+                            <li><strong>Confusion Matrix:</strong> Analisis error per kelas</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- References -->
+            <div class="card mt-3">
+                <h2>Referensi</h2>
+                <ol style="line-height: 2;">
+                    <li>Chawla et al. (2002) - "SMOTE: Synthetic Minority Over-sampling Technique"</li>
+                    <li>Joachims (1998) - "Text Categorization with Support Vector Machines"</li>
+                    <li>Haddi et al. (2013) - "The Role of Text Pre-processing in Sentiment Analysis"</li>
+                    <li>Sastrawi - Indonesian Stemmer Library</li>
+                </ol>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Sentiment Analysis - Tugas Akhir Information Retrieval</p>
+            <p>STIS - Semester 5</p>
+        </div>
+    </footer>
+</body>
+
+</html>

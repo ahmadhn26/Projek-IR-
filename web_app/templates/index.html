@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentiment Analysis - Kenaikan Tarif Transjakarta</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-brand">📊 Sentiment Analysis</div>
+            <ul class="navbar-menu">
+                <li><a href="/" class="active">Home</a></li>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/analyzer">Analyzer</a></li>
+                <li><a href="/comparison">Comparison</a></li>
+                <li><a href="/methodology">Methodology</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>🚌 Analisis Sentimen Kenaikan Tarif Transjakarta</h1>
+                <p>Menganalisis opini masyarakat terhadap rencana kenaikan tarif Transjakarta menggunakan Machine
+                    Learning</p>
+
+                <div class="hero-stats">
+                    <div class="stat-card">
+                        <span class="stat-number">{{ stats.total_samples if stats else '2,757' }}</span>
+                        <span class="stat-label">Total Komentar</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">3</span>
+                        <span class="stat-label">Model ML</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">{{ "%.1f"|format((best_model.Test_Accuracy * 100) if best_model else
+                            85.0) }}%</span>
+                        <span class="stat-label">Akurasi Terbaik</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section">
+        <div class="container">
+            <h2 class="text-center mb-3">Fitur Utama</h2>
+
+            <div class="grid grid-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">📈 Dashboard Interaktif</h3>
+                    </div>
+                    <p>Visualisasi komprehensif dari hasil penelitian dengan grafik interaktif dan statistik lengkap.
+                    </p>
+                    <a href="/dashboard" class="btn btn-primary">Lihat Dashboard</a>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">🤖 Real-time Analyzer</h3>
+                    </div>
+                    <p>Coba sendiri! Masukkan komentar dan dapatkan prediksi sentimen secara real-time.</p>
+                    <a href="/analyzer" class="btn btn-primary">Coba Sekarang</a>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">⚖️ Model Comparison</h3>
+                    </div>
+                    <p>Bandingkan performa Naive Bayes, SVM, dan Random Forest dengan metrik lengkap.</p>
+                    <a href="/comparison" class="btn btn-primary">Lihat Perbandingan</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="section" style="background: white;">
+        <div class="container">
+            <div class="grid grid-2">
+                <div>
+                    <h2>Tentang Penelitian</h2>
+                    <p>Penelitian ini menganalisis sentimen masyarakat terhadap rencana kenaikan tarif Transjakarta
+                        menggunakan data dari platform media sosial TikTok dan YouTube.</p>
+
+                    <h4 class="mt-2">Metodologi</h4>
+                    <ul style="list-style: none; padding-left: 0;">
+                        <li>✅ <strong>Preprocessing:</strong> Text cleaning, normalisasi slang, stemming</li>
+                        <li>✅ <strong>Feature Extraction:</strong> TF-IDF dengan bigram</li>
+                        <li>✅ <strong>Balancing:</strong> SMOTE untuk handle imbalanced data</li>
+                        <li>✅ <strong>Modeling:</strong> Naive Bayes, SVM, Random Forest</li>
+                        <li>✅ <strong>Tuning:</strong> GridSearchCV dengan 5-fold CV</li>
+                    </ul>
+
+                    <a href="/methodology" class="btn btn-secondary mt-2">Pelajari Lebih Lanjut</a>
+                </div>
+
+                <div>
+                    <div class="card">
+                        <h4>Model Terbaik</h4>
+                        {% if best_model %}
+                        <div style="text-align: center; padding: 2rem 0;">
+                            <div
+                                style="font-size: 3rem; font-weight: 700; background: var(--gradient-transjakarta); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                                {{ best_model.Model }}
+                            </div>
+                            <div style="margin-top: 1rem;">
+                                <div style="font-size: 1.5rem; font-weight: 700;">{{
+                                    "%.2f"|format(best_model.Test_F1_Macro) }}</div>
+                                <div style="color: var(--gray);">F1 Macro Score</div>
+                            </div>
+                            <div
+                                style="margin-top: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
+                                <div>
+                                    <div style="font-weight: 700;">{{ "%.1f"|format(best_model.Test_Accuracy * 100) }}%
+                                    </div>
+                                    <div style="font-size: 0.875rem; color: var(--gray);">Accuracy</div>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 700;">{{ "%.2f"|format(best_model.Test_ROC_AUC) if
+                                        best_model.Test_ROC_AUC else 'N/A' }}</div>
+                                    <div style="font-size: 0.875rem; color: var(--gray);">ROC-AUC</div>
+                                </div>
+                            </div>
+                        </div>
+                        {% else %}
+                        <p>Model belum di-training. Jalankan <code>train_and_save_models.py</code> terlebih dahulu.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section">
+        <div class="container text-center">
+            <h2>Siap Mencoba?</h2>
+            <p style="font-size: 1.125rem; color: var(--gray); margin-bottom: 2rem;">
+                Gunakan sentiment analyzer untuk memprediksi sentimen komentar Anda sendiri!
+            </p>
+            <a href="/analyzer" class="btn btn-primary btn-lg">Mulai Analisis →</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Sentiment Analysis - Tugas Akhir Information Retrieval</p>
+            <p>STIS - Semester 5</p>
+        </div>
+    </footer>
+</body>
+
+</html>
